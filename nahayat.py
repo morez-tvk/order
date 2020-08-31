@@ -4,6 +4,7 @@ import threading
 import datetime
 from requests_futures.sessions import FuturesSession
 from multiprocessing import Process
+import os, signal
 
 
 class NahayatNegar:
@@ -38,8 +39,7 @@ class NahayatNegar:
         wakeup_time = final_time - time.time()
         print(wakeup_time)
         time.sleep(wakeup_time)
-        t.kill()
-        t.join(0)
+        os.kill(t.pid, sig=signal.SIGKILL)
 
     def order(self):
         print('single ordering')
