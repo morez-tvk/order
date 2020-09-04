@@ -43,14 +43,14 @@ class NahayatNegar:
 
     def order(self):
         print('single ordering')
-        with FuturesSession(max_workers=500) as session:
+        with FuturesSession(max_workers=100) as session:
             while True:
                 future = session.post(url=self.link, cookies=self.cookies, headers=self.headers, data=self.data,
                                       hooks={'response': self.response_hook}, timeout=1200000)
 
     def sequence_order(self):
         print('multi item ordering')
-        with FuturesSession(max_workers=500) as session:
+        with FuturesSession(max_workers=100) as session:
             while True:
                 for sahm in self.data_list:
                     future = session.post(url=self.link, cookies=self.cookies, headers=self.headers, data=sahm,
