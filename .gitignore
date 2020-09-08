@@ -6,6 +6,7 @@ log/
 # C extensions
 *.so
 .env
+.idea
 # Distribution / packaging
 .Python
 build/
