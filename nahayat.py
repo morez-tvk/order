@@ -16,9 +16,10 @@ delay_list = [1,
 1,
 1,
 1,
-2,
-2,
-2,
+1,
+1,
+1,
+1,
 2,
 2,
 2,
@@ -28,8 +29,7 @@ delay_list = [1,
 2,
 5,
 5,
-7,
-9,
+5,
 10,
 12,
 15,
@@ -85,17 +85,14 @@ class NahayatNegar:
         #     datetime.datetime.strptime(self.time, "%Y-%m-%d %H:%M:%S").timetuple()) + time_period
         #pause.until(datetime.datetime.strptime(self.time, "%Y-%m-%d %H:%M:%S"))
         now_time = datetime.datetime.now()
-        pause_until = now_time.replace(hour=1, minute=55,second=50)#,microsecond=996000)
+        t = Process(target=self.order, daemon=True)
+        print ("t created")
+        pause_until = now_time.replace(hour=8, minute=29,second=59,microsecond=990000)
         pause.until(pause_until)
-        if len(self.data_list) == 0:
-            t = Process(target=self.order, daemon=True)
-        else:
-            t = Process(target=self.sequence_order, daemon=True)
         t.start()
-        # wakeup_time = final_time - time.time()
-        # print(wakeup_time)
-        # time.sleep(wakeup_time)
-        # t.terminate()
+        wakeup_time = 2000
+        time.sleep(wakeup_time)
+        t.terminate()
 
     def order(self):
         print('single ordering')
