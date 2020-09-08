@@ -5,7 +5,7 @@ import datetime
 from requests_futures.sessions import FuturesSession
 from multiprocessing import Process
 import os, signal
-
+import datetime
 
 class NahayatNegar:
     def __init__(self, data, limit_time):
@@ -28,6 +28,7 @@ class NahayatNegar:
 
     def multi_req(self, delay=0, time_period=5):
         print(self.data_list)
+        self.delay = delay / 1000
         final_time = time.mktime(
             datetime.datetime.strptime(self.time, "%Y-%m-%d %H:%M:%S").timetuple()) + time_period
         pause.until(datetime.datetime.strptime(self.time, "%Y-%m-%d %H:%M:%S"))
@@ -39,26 +40,33 @@ class NahayatNegar:
         wakeup_time = final_time - time.time()
         print(wakeup_time)
         time.sleep(wakeup_time)
-        os.kill(t.pid, sig=signal.SIGKILL)
+        t.terminate()
 
     def order(self):
         print('single ordering')
-        with FuturesSession(max_workers=100) as session:
-            while True:
+        print(datetime.datetime.now())
+        with FuturesSession(max_workers=1) as session:
+            while not self.success:
                 future = session.post(url=self.link, cookies=self.cookies, headers=self.headers, data=self.data,
                                       hooks={'response': self.response_hook}, timeout=1200000)
+                time.sleep(self.delay)
 
     def sequence_order(self):
         print('multi item ordering')
-        with FuturesSession(max_workers=100) as session:
+        with FuturesSession(max_workers=1) as session:
             while True:
                 for sahm in self.data_list:
                     future = session.post(url=self.link, cookies=self.cookies, headers=self.headers, data=sahm,
                                           hooks={'response': self.response_hook}, timeout=1200000)
 
     def response_hook(self, resp, *args, **kwargs):
-        # print(resp.json())
-        pass
+        try:
+            result = resp.json()
+            # print(result)
+            if result['done'] == True:
+                self.success = True
+        except:
+            pass
 
 
 if __name__ == '__main__':
