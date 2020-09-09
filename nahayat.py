@@ -56,7 +56,7 @@ delay_list = [1,
 300,
 500,
 1000,
-2000]
+5000]
 
 
 class NahayatNegar:
