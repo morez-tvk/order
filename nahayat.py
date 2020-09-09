@@ -9,7 +9,8 @@ import datetime
 from LogMg import *
 
 
-delay_list = [1,
+delay_list = \
+    [1,
 1,
 1,
 1,
@@ -29,36 +30,36 @@ delay_list = [1,
 2,
 2,
 2,
+2,
+2,
+2,
+5,
+5,
+5,
 5,
 5,
 5,
 10,
-12,
-15,
-18,
-22,
-25,
-25,
-30,
-30,
-30,
-30,
-35,
-35,
-35,
-40,
-40,
-40,
-50,
-50,
+5,
+5,
+10,
+5,
+5,
+5,
+10,
+10,
+5,
+5,
+5,
+5,
+10,
 50,
 50,
 100,
 200,
 300,
 500,
-1000,
-5000]
+1000]
 
 
 class NahayatNegar:
@@ -90,7 +91,7 @@ class NahayatNegar:
         logger.info(now_time)
         #t = Process(target=self.order, daemon=True)
         logger.info ("t created")
-        pause_until = now_time.replace(hour=19, minute=delay,second=30,microsecond=990000)
+        pause_until = now_time.replace(hour=20, minute=delay,second=29,microsecond=900000)
         pause.until(pause_until)
         self.order()
         #t.start()
@@ -106,6 +107,7 @@ class NahayatNegar:
             while not self.success:
                 # future = session.post(url=self.link, cookies=self.cookies, headers=self.headers, data=self.data,
                 #                       hooks={'response': self.response_hook}, timeout=1200000)
+                logger.info(datetime.datetime.now())
                 if delay_index >= len(delay_list):
                     logger.info ("failed")
                     break
