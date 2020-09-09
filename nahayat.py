@@ -105,8 +105,8 @@ class NahayatNegar:
         with FuturesSession(max_workers=1) as session:
             delay_index = 0
             while not self.success:
-                # future = session.post(url=self.link, cookies=self.cookies, headers=self.headers, data=self.data,
-                #                       hooks={'response': self.response_hook}, timeout=1200000)
+                future = session.post(url=self.link, cookies=self.cookies, headers=self.headers, data=self.data,
+                                      hooks={'response': self.response_hook}, timeout=1200000)
                 logger.info(datetime.datetime.now())
                 if delay_index >= len(delay_list):
                     logger.info ("failed")
