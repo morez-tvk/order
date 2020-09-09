@@ -3,9 +3,8 @@ import json
 import pause
 
 import datetime
-
-import concurrent.futures
-import requests
+from requests_futures.sessions import FuturesSession
+from multiprocessing import Process
 import threading
 import time
 
@@ -13,51 +12,73 @@ import time
 class Ordering:
     def __init__(self, data, time):
         self.threads = []
-        self.data = json.loads(list(data['data'].keys())[0])
-        self.headers = data['headers']
-        self.cookies = data['cookies']
-        self.link = data['url']
+        self.data_list = []
+        if type(data) == list:
+            for sahm in data:
+                self.data_list.append(json.loads(list(sahm['data'].keys())[0]))
+                self.headers = sahm['headers']
+                self.cookies = sahm['cookies']
+                self.link = sahm['url']
+        elif type(data) == dict:
+            self.data = json.loads(list(data['data'].keys())[0])
+            self.headers = data['headers']
+            self.cookies = data['cookies']
+            self.link = data['url']
         self.success = False
         self.time = time
         self.buyed_quantity = 0
         self.delay = 0
-        self.time_period = 2
+        self.time_period = 10
         self.thread_local = threading.local()
         self.sem = threading.Semaphore()
         self.sem_file = threading.Semaphore()
-        self.log = open(f"log/rayan-{self.data['insMaxLcode']}--{time}--{self.data['quantity']}.json", "w")
+        # self.log = open(f"log/rayan-{self.data['insMaxLcode']}--{time}--{self.data['quantity']}.json", "w")
 
-    def multi_req(self, delay=0, time_period=15):
-        self.delay = delay
-        self.time_period = time_period
+    def multi_req(self, delay=0, time_period=5):
+        print(self.data_list)
+        self.delay = delay / 1000
+        self.final_time = time.mktime(
+            datetime.datetime.strptime(self.time, "%Y-%m-%d %H:%M:%S").timetuple()) + time_period
         pause.until(datetime.datetime.strptime(self.time, "%Y-%m-%d %H:%M:%S"))
-        with concurrent.futures.ThreadPoolExecutor(max_workers=500) as self.executor:
-            print('creating a thread')
-            self.futures = [self.executor.submit(self.order) for _ in range(500)]
-
-    def cancel_order(self):
-        try:
-            self.executor.shutdown(wait=False)
-        except:
-            print("ERROR on Canceling thread")
-
-    def get_session(self):
-        if not hasattr(self.thread_local, "session"):
-            self.thread_local.session = requests.Session()
-        return self.thread_local.session
+        if len(self.data_list) == 0:
+            t = Process(target=self.order, daemon=True)
+        else:
+            t = Process(target=self.sequence_order, daemon=True)
+        t.start()
+        wakeup_time = self.final_time - time.time()
+        print(wakeup_time)
+        time.sleep(wakeup_time)
+        t.terminate()
 
     def order(self):
-        # print('new thread')
+        print('single ordering')
+        print(datetime.datetime.now())
+        with FuturesSession(max_workers=1) as session:
+            while True:
+                future = session.post(url=self.link, cookies=self.cookies, headers=self.headers, json=self.data,
+                                      hooks={'response': self.response_hook}, timeout=1200000)
+                if self.final_time < time.time(): break
+                time.sleep(self.delay)
 
-        session = self.get_session()
-        print(self.data)
-        while time.time() < time.mktime(
-                datetime.datetime.strptime(self.time, "%Y-%m-%d %H:%M:%S").timetuple()) + self.time_period:
-            with session.post(url=self.link, json=self.data, headers=self.headers, cookies=self.cookies,
-                              timeout=100) as response:
-                pass
-                # print(response.json())
-        print('finished')
+    def sequence_order(self):
+        print('multi item ordering')
+        with FuturesSession(max_workers=1) as session:
+            while True:
+                for sahm in self.data_list:
+                    future = session.post(url=self.link, cookies=self.cookies, headers=self.headers, json=sahm,
+                                          hooks={'response': self.response_hook}, timeout=1200000)
+                    if self.final_time < time.time(): break
+                    time.sleep(self.delay)
+
+    def response_hook(self, resp, *args, **kwargs):
+        try:
+            result = resp.json()
+            print(result)
+            # if result['done'] == True:
+            #     self.success = True
+        except:
+            pass
+
 
 if __name__ == '__main__':
     data = {
