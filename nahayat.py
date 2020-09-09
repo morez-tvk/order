@@ -6,6 +6,8 @@ from requests_futures.sessions import FuturesSession
 from multiprocessing import Process
 import os, signal
 import datetime
+from LogMg import *
+
 
 delay_list = [1,
 1,
@@ -85,10 +87,10 @@ class NahayatNegar:
         #     datetime.datetime.strptime(self.time, "%Y-%m-%d %H:%M:%S").timetuple()) + time_period
         #pause.until(datetime.datetime.strptime(self.time, "%Y-%m-%d %H:%M:%S"))
         now_time = datetime.datetime.now()
-        print(now_time)
+        logger.info(now_time)
         #t = Process(target=self.order, daemon=True)
-        print ("t created")
-        pause_until = now_time.replace(hour=18, minute=delay,second=30,microsecond=990000)
+        logger.info ("t created")
+        pause_until = now_time.replace(hour=19, minute=delay,second=30,microsecond=990000)
         pause.until(pause_until)
         self.order()
         #t.start()
@@ -97,17 +99,17 @@ class NahayatNegar:
         #t.terminate()
 
     def order(self):
-        print('single ordering')
-        print(datetime.datetime.now())
+        logger.info('single ordering')
+        logger.info(datetime.datetime.now())
         with FuturesSession(max_workers=1) as session:
             delay_index = 0
             while not self.success:
                 # future = session.post(url=self.link, cookies=self.cookies, headers=self.headers, data=self.data,
                 #                       hooks={'response': self.response_hook}, timeout=1200000)
                 if delay_index >= len(delay_list):
-                    print ("failed")
+                    logger.info ("failed")
                     break
-                print(delay_list [delay_index])
+                logger.info(delay_list [delay_index])
                 time.sleep(delay_list [delay_index]/1000)
                 delay_index += 1
 
@@ -122,10 +124,10 @@ class NahayatNegar:
     def response_hook(self, resp, *args, **kwargs):
         try:
             result = resp.json()
-            print(result)
+            logger.info(result)
             if result['done'] == True:
                 self.success = True
-                print ("done")
+                logger.info ("done")
         except:
             pass
 
