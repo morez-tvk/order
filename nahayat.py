@@ -87,7 +87,7 @@ class NahayatNegar:
         now_time = datetime.datetime.now()
         t = Process(target=self.order, daemon=True)
         print ("t created")
-        pause_until = now_time.replace(hour=8, minute=29,second=59,microsecond=990000)
+        pause_until = now_time.replace(hour=18, minute=delay,second=30,microsecond=990000)
         pause.until(pause_until)
         t.start()
         wakeup_time = 2000
@@ -100,8 +100,8 @@ class NahayatNegar:
         with FuturesSession(max_workers=1) as session:
             delay_index = 0
             while not self.success:
-                future = session.post(url=self.link, cookies=self.cookies, headers=self.headers, data=self.data,
-                                      hooks={'response': self.response_hook}, timeout=1200000)
+                # future = session.post(url=self.link, cookies=self.cookies, headers=self.headers, data=self.data,
+                #                       hooks={'response': self.response_hook}, timeout=1200000)
                 if delay_index >= len(delay_list):
                     print ("failed")
                     break
