@@ -86,14 +86,15 @@ class NahayatNegar:
         #pause.until(datetime.datetime.strptime(self.time, "%Y-%m-%d %H:%M:%S"))
         now_time = datetime.datetime.now()
         print(now_time)
-        t = Process(target=self.order, daemon=True)
+        #t = Process(target=self.order, daemon=True)
         print ("t created")
         pause_until = now_time.replace(hour=18, minute=delay,second=30,microsecond=990000)
         pause.until(pause_until)
-        t.start()
-        wakeup_time = 2000
-        time.sleep(wakeup_time)
-        t.terminate()
+        self.order()
+        #t.start()
+        #wakeup_time = 2000
+        #time.sleep(wakeup_time)
+        #t.terminate()
 
     def order(self):
         print('single ordering')
