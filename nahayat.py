@@ -101,16 +101,15 @@ class NahayatNegar:
 
     def order(self):
         logger.info('single ordering')
-        logger.info(datetime.datetime.now())
         with FuturesSession(max_workers=1) as session:
             delay_index = 0
-            while not self.success:
+            while delay_index < len(delay_list):
+                logger.info(datetime.datetime.now())
                 future = session.post(url=self.link, cookies=self.cookies, headers=self.headers, data=self.data,
                                       hooks={'response': self.response_hook}, timeout=1200000)
-                logger.info(datetime.datetime.now())
-                if delay_index >= len(delay_list):
-                    logger.info ("failed")
-                    break
+                # if delay_index >= len(delay_list):
+                #     logger.info ("failed")
+                #     break
                 logger.info(delay_list [delay_index])
                 time.sleep(delay_list [delay_index]/1000)
                 delay_index += 1
@@ -126,11 +125,12 @@ class NahayatNegar:
     def response_hook(self, resp, *args, **kwargs):
         try:
             result = resp.json()
-            logger.info(result)
-            if result['done'] == True:
-                self.success = True
-                logger.info ("done")
-        except:
+            logger.info(str(result))
+            # if result['done'] == True:
+            #     self.success = True
+            #     logger.info ("done")
+        except Exception as e:
+            logger.info(str(e))
             pass
 
 
