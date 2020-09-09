@@ -85,6 +85,7 @@ class NahayatNegar:
         #     datetime.datetime.strptime(self.time, "%Y-%m-%d %H:%M:%S").timetuple()) + time_period
         #pause.until(datetime.datetime.strptime(self.time, "%Y-%m-%d %H:%M:%S"))
         now_time = datetime.datetime.now()
+        print(now_time)
         t = Process(target=self.order, daemon=True)
         print ("t created")
         pause_until = now_time.replace(hour=18, minute=delay,second=30,microsecond=990000)
