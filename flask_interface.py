@@ -85,7 +85,7 @@ class nahayat_negar(Resource):
             #t = Process(target=orders[oid].multi_req, args=(delay, time_period))
             #t.start()
             print ("wating ...")
-            orders ['oid'].multi_req (delay, time_period)
+            orders [oid].multi_req (delay, time_period)
             #l_o[oid] = t
             return {'id': oid, 'status': 200}
 
