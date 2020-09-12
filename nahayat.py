@@ -54,9 +54,10 @@ class NahayatNegar:
 
     def order(self):
         with FuturesSession(max_workers=1) as session:
+            print("single request")
             delay_index = 0
             while delay_index < len(delay_list):
-                logger.info(datetime.datetime.now())
+                print(datetime.datetime.now())
                 future = session.post(url=self.link, cookies=self.cookies, headers=self.headers, data=self.data,
                                       hooks={'response': self.response_hook}, timeout=1200000)
                 logger.info(delay_list [delay_index])
@@ -83,5 +84,6 @@ class NahayatNegar:
             #     self.success = True
             #     logger.info ("done")
         except Exception as e:
+            print(str(e))
             logger.info(str(e))
             pass
