@@ -1,7 +1,7 @@
 import time
 import pause
 import requests
-import threading
+from threading import Thread
 import datetime, json
 from requests_futures.sessions import FuturesSession
 from multiprocessing import Process
@@ -12,7 +12,7 @@ class Chogan:
         # self.cookies = data['headers']
         self.data = json.loads(list(data['data'].keys())[0])
         self.time = limit_time
-        self.sem = threading.Semaphore()
+        # self.sem = threading.Semaphore()
         # self.sem_file = threading.Semaphore()
         self.log = open(f"log/chogan-{self.data['InstrumentCode']}--{time.time()}", "w")
         self.link = data['url']
@@ -25,7 +25,7 @@ class Chogan:
             datetime.datetime.strptime(self.time, "%Y-%m-%d %H:%M:%S").timetuple()) + time_period
         pause.until(datetime.datetime.strptime(self.time, "%Y-%m-%d %H:%M:%S"))
         # start = time.time()
-        t = Process(target=self.order, daemon=True)
+        t = Thread(target=self.order)
         t.start()
         while True:
             if time.time() > final_time:
