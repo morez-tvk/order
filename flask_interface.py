@@ -82,7 +82,7 @@ class nahayat_negar(Resource):
             time_period = data.get('time_period', 20)
             delay = data.get('delay', 0)
             orders[oid] = NahayatNegar(data=data['json'], limit_time=data['time'])
-            t = Thread(target=orders[oid].multi_req, args=(delay, time_period))
+            t = Process(target=orders[oid].multi_req, args=(delay, time_period))
             t.start()
             print ("wating ...")
             # orders [oid].multi_req (delay, time_period)
