@@ -41,11 +41,11 @@ class NahayatNegar:
         logger.info(now_time)
         t = Process(target=self.order, daemon=True)
         logger.info ("t created")
-        print("pausing")
         pause_until = now_time.replace(hour=9, minute=37 ,second=20,microsecond=980000)
         print(pause_until)
         pause.until(pause_until)
-        print("begin")
+        print(datetime.datetime.now())
+        # print("begin")
         #self.order()
         t.start()
         #wakeup_time = 2000
