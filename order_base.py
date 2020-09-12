@@ -1,3 +1,4 @@
+
 import time
 import pause
 import threading
@@ -9,10 +10,60 @@ import datetime
 from LogMg import *
 
 
-delay_list = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+delay_list = \
+    [5,
+5,
+5,
+5,
+5,
+5,
+5,
+5,
+5,
+3,
+2,
+2,
+2,
+2,
+2,
+2,
+2,
+2,
+2,
+2,
+2,
+2,
+2,
+2,
+2,
+5,
+5,
+5,
+5,
+5,
+5,
+5,
+5,
+5,
+5,
+5,
+5,
+5,
+5,
+5,
+5,
+5,
+10,
+25,
+50,
+50,
+100,
+100,
+200,
+300]
 
 
-class NahayatNegar:
+class Order:
     def __init__(self, data, limit_time):
         self.data_list = []
         if type(data) == list:
@@ -29,27 +80,23 @@ class NahayatNegar:
         self.time = limit_time.split(':')
         self.success = False
         self.time_period = 2
-        self.sem = threading.Semaphore()
 
     def multi_req(self, delay=0, time_period=5):
         print(self.data_list)
-        #self.delay = delay / 1000
-        # final_time = time.mktime(
-        #     datetime.datetime.strptime(self.time, "%Y-%m-%d %H:%M:%S").timetuple()) + time_period
-        #pause.until(datetime.datetime.strptime(self.time, "%Y-%m-%d %H:%M:%S"))
         now_time = datetime.datetime.now()
         logger.info(now_time)
-        #t = Process(target=self.order, daemon=True)
         logger.info ("t created")
-        pause_until = now_time.replace(hour=8, minute=29,second=50,microsecond=980000)
-        pause.until(pause_until)
-        self.order()
-        #t.start()
-        #wakeup_time = 2000
-        #time.sleep(wakeup_time)
-        #t.terminate()
+        if len(self.data_list) == 0:
+            pause_until = now_time.replace(hour=20, minute=delay,second=29,microsecond=900000)
+            pause.until(pause_until)
+            self.order()
+        else:
+            pause_until = now_time.replace(hour=20, minute=delay, second=29, microsecond=900000)
+            pause.until(pause_until)
+            self.sequence_order()
 
     def order(self):
+        logger.info('single ordering')
         with FuturesSession(max_workers=1) as session:
             delay_index = 0
             while delay_index < len(delay_list):
@@ -63,21 +110,15 @@ class NahayatNegar:
     def sequence_order(self):
         print('multi item ordering')
         with FuturesSession(max_workers=1) as session:
-            delay_index = 0
-            while delay_index < len(delay_list):
+            while True:
                 for sahm in self.data_list:
                     future = session.post(url=self.link, cookies=self.cookies, headers=self.headers, data=sahm,
                                           hooks={'response': self.response_hook}, timeout=1200000)
-                    time.sleep(delay_list[delay_index] / 1000)
-                    delay_index += 1
 
     def response_hook(self, resp, *args, **kwargs):
         try:
             result = resp.json()
             logger.info(str(result))
-            # if result['done'] == True:
-            #     self.success = True
-            #     logger.info ("done")
         except Exception as e:
             logger.info(str(e))
             pass
