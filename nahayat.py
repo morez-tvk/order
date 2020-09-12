@@ -68,8 +68,8 @@ class NahayatNegar:
 
     def response_hook(self, resp, *args, **kwargs):
         try:
-            result = resp.json()
-            print(result)
+            # result = resp.json()
+            print('yaaay')
             # logger.info(str(result))
             # if result['done'] == True:
             #     self.success = True
