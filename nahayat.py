@@ -39,12 +39,15 @@ class NahayatNegar:
         #pause.until(datetime.datetime.strptime(self.time, "%Y-%m-%d %H:%M:%S"))
         now_time = datetime.datetime.now()
         logger.info(now_time)
-        #t = Process(target=self.order, daemon=True)
+        t = Process(target=self.order, daemon=True)
         logger.info ("t created")
-        pause_until = now_time.replace(hour=8, minute=29,second=50,microsecond=980000)
+        print("pausing")
+        pause_until = now_time.replace(hour=9, minute=37 ,second=20,microsecond=980000)
+        print(pause_until)
         pause.until(pause_until)
-        self.order()
-        #t.start()
+        print("begin")
+        #self.order()
+        t.start()
         #wakeup_time = 2000
         #time.sleep(wakeup_time)
         #t.terminate()
@@ -74,6 +77,7 @@ class NahayatNegar:
     def response_hook(self, resp, *args, **kwargs):
         try:
             result = resp.json()
+            print(result)
             logger.info(str(result))
             # if result['done'] == True:
             #     self.success = True
