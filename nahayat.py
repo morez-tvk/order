@@ -33,28 +33,18 @@ class NahayatNegar:
 
     def multi_req(self, delay=0, time_period=5):
         print(self.data_list)
-        #self.delay = delay / 1000
-        # final_time = time.mktime(
-        #     datetime.datetime.strptime(self.time, "%Y-%m-%d %H:%M:%S").timetuple()) + time_period
-        #pause.until(datetime.datetime.strptime(self.time, "%Y-%m-%d %H:%M:%S"))
         now_time = datetime.datetime.now()
         logger.info(now_time)
-        # t = Thread(target=self.order)
         logger.info ("t created")
         pause_until = now_time.replace(hour=self.time[0], minute=self.time[1] ,second=self.time[2],microsecond=self.time[3])
         print(pause_until)
         pause.until(pause_until)
         print(datetime.datetime.now())
-        # print("begin")
         self.order()
-        # t.start()
-        #wakeup_time = 2000
-        #time.sleep(wakeup_time)
-        #t.terminate()
 
     def order(self):
         print("here is the order function")
-        with FuturesSession(max_workers=2) as session:
+        with FuturesSession(max_workers=1) as session:
             print("single request")
             delay_index = 0
             while delay_index < len(delay_list):
