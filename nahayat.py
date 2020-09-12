@@ -53,6 +53,7 @@ class NahayatNegar:
         #t.terminate()
 
     def order(self):
+        print("here is the order function")
         with FuturesSession(max_workers=1) as session:
             print("single request")
             delay_index = 0
