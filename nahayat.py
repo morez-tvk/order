@@ -26,7 +26,7 @@ class NahayatNegar:
             self.data = list(data['data'].keys())[0]
             self.headers = data['headers']
             self.link = data['url']
-        self.time = limit_time.split(':')
+        self.time = [int(i) for i in limit_time.split(':')]
         self.success = False
         self.time_period = 2
         self.sem = threading.Semaphore()
