@@ -47,13 +47,13 @@ class NahayatNegar:
         with FuturesSession(max_workers=1) as session:
             print("single request")
             delay_index = 0
-            while delay_index < len(delay_list):
+            for i in range(50):
                 print(datetime.datetime.now())
                 future = session.post(url=self.link, cookies=self.cookies, headers=self.headers, data=self.data,
-                                      hooks={'response': self.response_hook}, timeout=1200000)
-                logger.info(delay_list [delay_index])
-                time.sleep(delay_list [delay_index]/1000)
-                delay_index += 1
+                                      timeout=1200000)
+                # logger.info(delay_list [delay_index])
+                time.sleep(0.001)
+                # delay_index += 1
 
     def sequence_order(self):
         print('multi item ordering')
