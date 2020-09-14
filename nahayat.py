@@ -41,7 +41,7 @@ class NahayatNegar:
             pause.until(pause_until)
             self.infinite_order()
         else:
-            pause_until = now_time.replace(hour=self.time[0], minute=self.time[1] ,second=self.time[2]-3,microsecond=self.time[3])
+            pause_until = now_time.replace(hour=self.time[0], minute=self.time[1] ,second=self.time[2],microsecond=self.time[3])
             print(pause_until)
             pause.until(pause_until)
             self.order()
