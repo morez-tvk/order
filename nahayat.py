@@ -48,7 +48,7 @@ class NahayatNegar:
 
     def order(self):
         print("here is the order function")
-        with FuturesSession(max_workers=5) as session:
+        with FuturesSession(max_workers=1) as session:
             print("single request")
             delay_index = 0
             while delay_index < len(self.delay_list):
