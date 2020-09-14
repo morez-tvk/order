@@ -56,7 +56,7 @@ class NahayatNegar:
                 future = session.post(url=self.link, cookies=self.cookies, headers=self.headers, data=self.data,
                                       hooks={'response': self.response_hook},timeout=1200000)
                 # logger.info(delay_list [delay_index])
-                time.sleep(self.delay_list[delay_index] / 1000)
+                # time.sleep(self.delay_list[delay_index] / 1000)
                 delay_index += 1
 
     def infinite_order(self):
