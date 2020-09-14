@@ -41,9 +41,7 @@ class NahayatNegar:
             pause.until(pause_until)
             self.infinite_order()
         else:
-            pause_until = now_time.replace(hour=self.time[0], minute=self.time[1] ,second=self.time[2],microsecond=self.time[3])
-            print(pause_until)
-            pause.until(pause_until)
+
             self.order()
 
     def order(self):
@@ -58,6 +56,12 @@ class NahayatNegar:
                 # logger.info(delay_list [delay_index])
                 # time.sleep(self.delay_list[delay_index] / 1000)
                 delay_index += 1
+                if delay_index == 1:
+                    now_time = datetime.datetime.now()
+                    pause_until = now_time.replace(hour=self.time[0], minute=self.time[1], second=self.time[2],
+                                                   microsecond=self.time[3])
+                    print(pause_until)
+                    pause.until(pause_until)
 
     def infinite_order(self):
         print("here is the order function")
