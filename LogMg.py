@@ -9,8 +9,9 @@ logger.setLevel(logging.DEBUG)
 # fh = logging.FileHandler('controller.log')
 
 # add a rotating handler
-fh = RotatingFileHandler('order.log', maxBytes=200000000,
-                              backupCount=1)
+fh = RotatingFileHandler('order.log', maxBytes=2000000,
+                              backupCount=10)
+
 
 fh.setLevel(logging.DEBUG)
 # create console handler with a higher log level
@@ -23,3 +24,4 @@ fh.setFormatter(formatter)
 # add the handlers to the logger
 logger.addHandler(fh)
 #logger.addHandler(ch)
+
