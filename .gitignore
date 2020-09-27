@@ -73,6 +73,8 @@ instance/
 docs/_build/
 
 # PyBuilder
+#log/*
+log/
 target/
 
 # Jupyter Notebook
@@ -128,3 +130,5 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+*log/*.py
