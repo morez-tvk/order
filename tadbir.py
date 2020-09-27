@@ -1,67 +1,126 @@
 import time
 import pause
-import requests
-import threading
-import datetime, json
+from requests_futures.sessions import FuturesSession
+import datetime
+import json
+from LogMg import *
 
-
-
-class TadbirOrder:
-    def __init__(self, data , time):
-        self.data = data
-        self.cookies = data['cookies']
-        self.data = list(data['data'].keys())[0]
-        self.time = time
-        self.sem = threading.Semaphore()
-        self.sem_file = threading.Semaphore()
-        self.log = open(f"log/Tadbir-{self.data['isin']}--{time}--{self.data['orderCount']}.json", "w")
-        self.link = data['url']
+class OnlinePlus:
+    def __init__(self, data, limit_time):
+        self.data_list = []
+        if type(data) == list:
+            for sahm in data:
+                self.data_list.append(json.loads(list(sahm['data'].keys())[0]))
+                self.headers = sahm['headers']
+                self.link = sahm['url']
+        elif type(data) == dict:
+            self.data = json.loads(list(data['data'].keys())[0])
+            self.headers = data['headers']
+            self.link = data['url']
+        self.time = [int(i) for i in limit_time.split(':')]
         self.success = False
-        self.headers = data['headers']
 
-    def order(self):
-
-        try:
-            result = requests.post(self.link, cookies=self.cookies,
-                                   headers=self.headers, json=self.data)
-            print(result.json())
-            result = dict(result.json())
-            result['time'] = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-            self.sem_file.acquire()
-            json.dump(result, self.log, ensure_ascii=False, indent=4)
-            self.sem_file.release()
-        except Exception as e:
-            print(e)
-
-        try:
-            self.sem.acquire()
-            if result['IsSuccessfull']:
-                self.success = True
-            self.sem.release()
-        except:
-            pass
-
-    def multi_req(self, delay=0, time_period=None):
-        pause.until(datetime.datetime.strptime(self.time, "%Y-%m-%d %H:%M:%S"))
-        self.threads = []
-        while True:
-            self.sem.acquire()
-            if time_period != None:
-                if time.time() > time.mktime(
-                        datetime.datetime.strptime(self.time, "%Y-%m-%d %H:%M:%S").timetuple()) + time_period:
-                    self.cancel_order()
-                    return
-
-            elif not self.success:
-                self.sem.release()
-                self.threads.append(threading.Thread(target=self.order))
-                self.threads[-1].start()
-                time.sleep(delay)
+    def multi_req(self, delay=0, count=50 , workers=1 , finish_time=None):
+        self.delay = delay
+        self.count = count
+        self.workers = workers
+        logger.info("waiting to start")
+        now_time = datetime.datetime.now()
+        if finish_time is not None:
+            self.finish_time = [int(i) for i in finish_time.split(':')]
+            self.finish_time = now_time.replace(hour=self.finish_time[0], minute=self.finish_time[1], second=self.finish_time[2],
+                             microsecond=self.finish_time[3])
+            if len(self.data_list) == 0:
+                self.order_by_time()
             else:
-                self.sem.release()
-                self.cancel_order()
-                return
+                self.sequence_order_by_time()
+            return
+        if count == 0:
+            pause_until = now_time.replace(hour=self.time[0], minute=self.time[1], second=self.time[2],
+                                           microsecond=self.time[3])
+            pause.until(pause_until)
+            self.infinite_order()
+        else:
+            if len(self.data_list) == 0:
+                self.order_by_count()
+            else:
+                self.sequence_order()
 
-    def cancel_order(self):
-        for i in self.threads:
-            i.join(0)
+    def order_by_time(self):
+        now_time = datetime.datetime.now()
+        pause_until = now_time.replace(hour=self.time[0], minute=self.time[1], second=self.time[2],
+                                       microsecond=self.time[3])
+        pause.until(pause_until)
+        with FuturesSession(max_workers=self.workers) as session:
+            print("single request")
+            while True:
+                logger.info(datetime.datetime.now())
+                future = session.post(url=self.link, headers=self.headers, data=self.data,
+                                      hooks={'response': self.response_hook},timeout=1200000)
+                if datetime.datetime.now() > self.finish_time:
+                    break
+
+    def sequence_order_by_time(self):
+        now_time = datetime.datetime.now()
+        pause_until = now_time.replace(hour=self.time[0], minute=self.time[1], second=self.time[2],
+                                       microsecond=self.time[3])
+        pause.until(pause_until)
+        with FuturesSession(max_workers=self.workers) as session:
+            print("single request")
+            while True:
+                logger.info(datetime.datetime.now())
+                for sahm in self.data_list:
+                    future = session.post(url=self.link, headers=self.headers, data=sahm,
+                                          hooks={'response': self.response_hook},timeout=1200000)
+                    if datetime.datetime.now() > self.finish_time:
+                        break
+
+    def order_by_count(self):
+        print("single request")
+
+        now_time = datetime.datetime.now()
+        pause_until = now_time.replace(hour=self.time[0], minute=self.time[1], second=self.time[2],
+                                       microsecond=self.time[3])
+        pause.until(pause_until)
+        with FuturesSession(max_workers=self.workers) as session:
+            delay_index = 0
+            for i in range(self.count):
+                logger.info(datetime.datetime.now())
+                future = session.post(url=self.link, headers=self.headers, json=self.data,
+                                      hooks={'response': self.response_hook},timeout=1200000)
+                # time.sleep(self.delay)
+
+
+    def infinite_order(self):
+        print("here is the order function")
+        with FuturesSession(max_workers=self.workers) as session:
+            print("single request")
+            delay_index = 0
+            while True:
+                future = session.post(url=self.link, headers=self.headers, data=self.data,
+                                      hooks={'response': self.response_hook},timeout=1200000)
+                # logger.info(delay_list [delay_index])
+
+    def sequence_order(self):
+        print('multi item ordering')
+        now_time = datetime.datetime.now()
+        pause_until = now_time.replace(hour=self.time[0], minute=self.time[1], second=self.time[2],
+                                       microsecond=self.time[3])
+        pause.until(pause_until)
+        with FuturesSession(max_workers=self.workers) as session:
+            i = 0
+            while i < self.count:
+                for sahm in self.data_list:
+                    logger.info(datetime.datetime.now())
+                    future = session.post(url=self.link, headers=self.headers, data=sahm,
+                                          hooks={'response': self.response_hook}, timeout=1200000)
+                    i += 1
+                    # time.sleep(self.delay)
+
+    def response_hook(self, resp, *args, **kwargs):
+        try:
+            logger.info(resp.json())
+        except Exception as e:
+            print(str(e))
+            logger.info(str(e))
+            pass
