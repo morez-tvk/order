@@ -10,11 +10,11 @@ class OnlinePlus:
         self.data_list = []
         if type(data) == list:
             for sahm in data:
-                self.data_list.append(json.loads(list(sahm.keys())[0]))
+                self.data_list.append(list(sahm['data'].keys())[0])
                 self.headers = sahm['headers']
                 self.link = sahm['url']
         elif type(data) == dict:
-            self.data = json.loads(list(data.keys())[0])
+            self.data = list(data['data'].keys())[0]
             self.headers = data['headers']
             self.link = data['url']
         self.time = [int(i) for i in limit_time.split(':')]
@@ -55,7 +55,7 @@ class OnlinePlus:
             print("single request")
             while True:
 #                logger.info(datetime.datetime.now())
-                future = session.post(url=self.link, headers=self.headers, json=self.data,
+                future = session.post(url=self.link, headers=self.headers, data=self.data,
                                       hooks={'response': self.response_hook},timeout=1200000)
                 if datetime.datetime.now() > self.finish_time:
                     break
@@ -70,7 +70,7 @@ class OnlinePlus:
             while True:
                 logger.info(datetime.datetime.now())
                 for sahm in self.data_list:
-                    future = session.post(url=self.link, headers=self.headers, json=sahm,
+                    future = session.post(url=self.link, headers=self.headers, data=sahm,
                                           hooks={'response': self.response_hook},timeout=1200000)
                     if datetime.datetime.now() > self.finish_time:
                         break
@@ -86,7 +86,7 @@ class OnlinePlus:
             delay_index = 0
             for i in range(self.count):
                 logger.info(datetime.datetime.now())
-                future = session.post(url=self.link, headers=self.headers, json=self.data,
+                future = session.post(url=self.link, headers=self.headers, data=self.data,
                                       hooks={'response': self.response_hook},timeout=1200000)
                 # time.sleep(self.delay)
 
@@ -97,7 +97,7 @@ class OnlinePlus:
             print("single request")
             delay_index = 0
             while True:
-                future = session.post(url=self.link, headers=self.headers, json=self.data,
+                future = session.post(url=self.link, headers=self.headers, data=self.data,
                                       hooks={'response': self.response_hook},timeout=1200000)
                 # logger.info(delay_list [delay_index])
 
@@ -112,7 +112,7 @@ class OnlinePlus:
             while i < self.count:
                 for sahm in self.data_list:
                     logger.info(datetime.datetime.now())
-                    future = session.post(url=self.link, headers=self.headers, json=sahm,
+                    future = session.post(url=self.link, headers=self.headers, data=sahm,
                                           hooks={'response': self.response_hook}, timeout=1200000)
                     i += 1
                     # time.sleep(self.delay)
