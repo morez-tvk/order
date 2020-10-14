@@ -10,11 +10,11 @@ class OnlinePlus:
         self.data_list = []
         if type(data) == list:
             for sahm in data:
-                self.data_list.append(json.loads(list(sahm['data'].keys())[0]))
+                self.data_list.append(json.loads(list(sahm.keys())[0]))
                 self.headers = sahm['headers']
                 self.link = sahm['url']
         elif type(data) == dict:
-            self.data = json.loads(list(data['data'].keys())[0])
+            self.data = json.loads(list(data.keys())[0])
             self.headers = data['headers']
             self.link = data['url']
         self.time = [int(i) for i in limit_time.split(':')]
