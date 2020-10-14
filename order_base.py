@@ -16,6 +16,8 @@ class Order:
         elif type(data) == dict:
             self.cookies = data['cookies']
             self.data = list(data['data'].keys())[0]
+            logger.info(type(self.data))
+            logger.info(self.data)
             self.headers = data['headers']
             self.link = data['url']
         self.time = [int(i) for i in limit_time.split(':')]
@@ -51,6 +53,7 @@ class Order:
         now_time = datetime.datetime.now()
         pause_until = now_time.replace(hour=self.time[0], minute=self.time[1], second=self.time[2],
                                        microsecond=self.time[3])
+        logger.info("pause to start")
         pause.until(pause_until)
         with FuturesSession(max_workers=self.workers) as session:
             print("single request")
