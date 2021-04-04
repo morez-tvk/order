@@ -51,7 +51,7 @@ class NahayatNegar:
         # print("here is the order function")
         data = json.loads(self.data)
         data['data']['orderTicket'] = ot
-        print("single request")
+        logger.info("single request")
         now_time = datetime.datetime.now()
         pause_until = now_time.replace(hour=self.time[0], minute=self.time[1], second=self.time[2],
                                        microsecond=self.time[3])
@@ -60,7 +60,7 @@ class NahayatNegar:
             res = session.post(url=self.link, cookies=self.cookies, headers=self.headers, data=json.dumps(data),timeout=1200000)
             ot = res.json()['customer']['orderTicket']
             data['data']['orderTicket'] = ot
-            print(datetime.datetime.now(), res.json())
+            logger.info(datetime.datetime.now(), res.json())
 
         # with FuturesSession(max_workers=1) as session:
 
