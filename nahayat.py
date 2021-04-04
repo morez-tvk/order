@@ -5,9 +5,12 @@ import datetime
 from requests_futures.sessions import FuturesSession
 from multiprocessing import Process
 import os, signal
+import requests
+import json
 import datetime
 from LogMg import *
 
+session = requests.session()
 
 delay_list = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
 
@@ -31,41 +34,55 @@ class NahayatNegar:
         self.time_period = 2
         # self.sem = threading.Semaphore()
 
-    def multi_req(self, delay=0, time_period=50):
+    def multi_req(self, next_ot, delay=0, time_period=50):
         self.delay_list = [3000]  + ([delay] * (time_period - 1))
-        now_time = datetime.datetime.now()
+
         logger.info ("waiting to start")
-        if time_period == 0:
-            pause_until = now_time.replace(hour=self.time[0], minute=self.time[1], second=self.time[2],
-                                           microsecond=self.time[3])
-            pause.until(pause_until)
-            self.infinite_order()
-        else:
+        # if time_period == 0:
+        #     pause_until = now_time.replace(hour=self.time[0], minute=self.time[1], second=self.time[2],
+        #                                    microsecond=self.time[3])
+        #     pause.until(pause_until)
+        #     self.infinite_order()
+        # else:
 
-            self.order()
+        self.order(next_ot,time_period)
 
-    def order(self):
-        print("here is the order function")
-        with FuturesSession(max_workers=1) as session:
-            print("single request")
-            delay_index = 0
-            while delay_index < len(self.delay_list):
-                logger.info(datetime.datetime.now())
-                future = session.post(url=self.link, cookies=self.cookies, headers=self.headers, data=self.data,
-                                      hooks={'response': self.response_hook},timeout=1200000)
-                # logger.info(delay_list [delay_index])
-                # time.sleep(self.delay_list[delay_index] / 1000)
-                delay_index += 1
-                if delay_index == 1:
-                    now_time = datetime.datetime.now()
-                    pause_until = now_time.replace(hour=self.time[0], minute=self.time[1], second=self.time[2],
-                                                   microsecond=self.time[3])
-                    print(pause_until)
-                    pause.until(pause_until)
+    def order(self,ot ,x):
+        # print("here is the order function")
+        data = json.loads(self.data)
+        data['data']['orderTicket'] = ot
+        print("single request")
+        now_time = datetime.datetime.now()
+        pause_until = now_time.replace(hour=self.time[0], minute=self.time[1], second=self.time[2],
+                                       microsecond=self.time[3])
+        pause.until(pause_until)
+        for i in range(x):
+            res = session.post(url=self.link, cookies=self.cookies, headers=self.headers, data=json.dumps(data),timeout=1200000)
+            ot = res.json()['customer']['orderTicket']
+            data['data']['orderTicket'] = ot
+            print(datetime.datetime.now(), res.json())
+
+        # with FuturesSession(max_workers=1) as session:
+
+            # delay_index = 0
+
+            # while delay_index < len(self.delay_list):
+            #     logger.info(datetime.datetime.now())
+            #     future = session.post(url=self.link, cookies=self.cookies, headers=self.headers, data=self.data,
+            #                           hooks={'response': self.response_hook},timeout=1200000)
+            #     # logger.info(delay_list [delay_index])
+            #     # time.sleep(self.delay_list[delay_index] / 1000)
+            #     delay_index += 1
+            #     if delay_index == 1:
+            #         now_time = datetime.datetime.now()
+            #         pause_until = now_time.replace(hour=self.time[0], minute=self.time[1], second=self.time[2],
+            #                                        microsecond=self.time[3])
+            #         print(pause_until)
+            #         pause.until(pause_until)
 
     def infinite_order(self):
         print("here is the order function")
-        with FuturesSession(max_workers=50) as session:
+        with FuturesSession(max_workers=1) as session:
             print("single request")
             delay_index = 0
             while True:
