@@ -38,7 +38,7 @@ class NahayatNegar:
         now_time = datetime.datetime.now()
         pause_until = now_time.replace(hour=self.time[0], minute=self.time[1], second=self.time[2],
                                        microsecond=self.time[3])
-        # pause.until(pause_until)
+        pause.until(pause_until)
         try:
             res = session.post(url=self.link, cookies=self.cookies, headers=self.headers, data=json.dumps(data),
                                timeout=1200000)

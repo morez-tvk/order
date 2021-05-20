@@ -44,9 +44,9 @@ def first_order():
         next_ot = data.get("next_ot")
         orders[oid] = NahayatNegar(data=data['json'], limit_time=data['time'],
                                    servers=data['servers'])
-        orders[oid].order(next_ot)
-        # t = Process(target=orders[oid].order, args=(next_ot))
-        # t.start()
+        # orders[oid].order(next_ot)
+        t = Process(target=orders[oid].order, args=(next_ot))
+        t.start()
         print("wating ...")
         # orders [oid].multi_req (delay, time_period)
         # l_o[oid] = t
