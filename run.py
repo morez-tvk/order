@@ -91,4 +91,4 @@ def x():
         pass
 
 
-app.run(host='localhost',port=2020)
+app.run(host='0.0.0.0',port=2020)
